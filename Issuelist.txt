@@ -1,0 +1,90 @@
+import axios from 'axios';
+import React, { useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { Card, CardBody, CardText, Col, ListGroup, Row } from 'reactstrap';
+import issue_book_url from '../service/IssueUrl';
+import MyList from './MyList';
+import Header from './Header';
+import { Button, Table } from "reactstrap";
+export default function IssueList() {
+    const {id} = useParams();
+    console.log(id);
+   const [books,setBooks] = useState([]);
+
+   useEffect(()=>{
+    getBooks();
+   },[])
+
+  const getBooks = ()=>{
+    axios.get(`${issue_book_url}/getbooksbyusername/${id}`).then(
+      (response)=>{
+           console.log(response.data);
+           setBooks(response.data)
+      },(error)=>{
+           console.log(error);
+      }
+    )
+  }
+
+  const updateList = (bookId) =>{
+    setBooks(books.filter((b) => b.bookId != bookId));
+   };
+  
+
+  
+  return (
+  <>
+  <Header></Header>
+   <Row>
+    <Col md={4}>
+          <ListGroup >
+
+            <Link className='list-group-item list-group-item-action' to={`/viewbooksformember/${id}`} style={{ backgroundColor: '#404040', color: 'white' }}>View Books</Link>
+            <Link className='list-group-item list-group-item-action' to={`/issuelist/${id}`} style={{ backgroundColor: '#404040', color: 'white' }}>Issue List</Link>
+            <Link className='list-group-item list-group-item-action' to={`/searchbycategory/${id}`} style={{ backgroundColor: '#404040', color: 'white' }}>Search By Category</Link>
+            <Link className='list-group-item list-group-item-action' to={`/searchbybook/${id}`} style={{ backgroundColor: '#404040', color: 'white' }}>Search By Book</Link>
+
+          </ListGroup>
+
+        </Col>
+    <Col>
+    <Card style={{marginTop : '15px'}}>
+    <CardBody>
+        <CardText>
+
+        <Table striped >
+        <thead>
+          <tr>
+            <th>Issue Id</th>
+            <th>Book Id</th>
+            <th>Username</th>
+            {/* <td>Name</td> */}
+            <th>Issued Date</th>
+            <th>Return Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+        {
+        books.length > 0 ? books.map((book)=>(
+          <MyList key = {book.name} book={book} memberUsername = {id} update = {updateList}/>
+        )) : "No Books"
+       }
+        </tbody>
+      </Table>
+       
+        </CardText>
+    </CardBody>
+   </Card>
+
+     
+    </Col>
+   </Row>
+  
+  
+  
+  
+  </>
+  )
+}
+

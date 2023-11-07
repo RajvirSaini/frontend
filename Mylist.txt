@@ -1,0 +1,77 @@
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { Button, Table } from "reactstrap";
+import issue_book_url from "../service/IssueUrl";
+import base_url from "../service/api";
+
+export default function MyList({ book, memberUsername, bookName, update }) {
+  const { id } = useParams();
+  console.log(book)
+
+  const deleteBook = (issueId) => {
+    axios.delete(`${issue_book_url}/returnBook/${issueId}`).then(
+      (response) => {
+        toast.success("Book Returned Successfully", {
+          position: 'bottom-center',
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          theme: 'dark'
+        });
+        window.location.reload();
+      },
+      () => {
+        toast.error("Return Fail", {
+          position: 'bottom-center',
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          theme: 'dark'
+        });
+      }
+    );
+  };
+
+  // const getBookFromServer = () => {
+  //   axios.get(`${base_url}/getbookbyid/${books.bookId}`).then(
+  //     (response) => {
+  //       setBooks(response.data);
+
+
+  //     }, (error) => {
+  //       console.log(error);
+
+  //     }
+  //   )
+  // }
+
+  return (
+    <>
+      
+          <tr>
+            <td>{book.issueBookId}</td>
+            <td>{book.bookId}</td>
+            <td>{book.memberUsername}</td>
+            {/* <th>{book.bookName}</th> */}
+            <td style={{ color: "green" }}>{book.issueDate}</td>
+            <td style={{ color: "red" }}>{book.returnDate}</td>
+            <td>
+              <Button
+                size="sm"
+                color="warning"
+                onClick={() => {
+                  deleteBook(book.issueBookId);
+                }}
+              >
+                Return Book
+              </Button>
+            </td>
+          </tr>
+        
+    </>
+  );
+}
